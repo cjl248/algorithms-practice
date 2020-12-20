@@ -21,40 +21,40 @@ const find_permutation = function(str, pattern) {
   // return includes
 
   let windowStart = 0
+  let matched = 0
   let patternLetters = {}
-  let windowLetters = {}
-  let inludes = false
+  let include = false
 
-  for (let letter of str) {
+  for (let letter of pattern) {
     if (!(letter in patternLetters)) {
       patternLetters[letter] = 0
     }
     patternLetters[letter]++
   }
-  const _pattern = patternLetters
 
   for (let windowEnd = 0; windowEnd < str.length; windowEnd++) {
-    if (str[windowEnd] in patternLetters) {
-      patternLetters[str[windowEnd]]--
-      if (patternLetters[str[windowEnd]] === 0) {
-        delete patternLetters[str[windowEnd]]
+    const rightLetter = str[windowEnd]
+    if (rightLetter in patternLetters) {
+      patternLetters[rightLetter]--
+      if (patternLetters[rightLetter] === 0) {
+        matched++
       }
-      if (!(str[windowEnd] in windowLetters)) {
-        windowLetters[str[windowEnd]] = 0
+    }
+
+    if (Object.keys(patternLetters).length === matched) {
+      return true
+    }
+
+    if (windowEnd >= pattern.length - 1) {
+      const leftLetter = str[windowStart]
+      windowStart++
+      if (leftLetter in patternLetters) {
+        if (patternLetters[leftLetter] === 0) {
+          matched--
+        }
+        patternLetters[leftLetter]++
       }
-      windowLetters[str[windowEnd]]++
-    } else {
-    // if (!(str[windowEnd] in patternLetters)) {
-      windowStart = windowEnd
-      windowLetters = {}
-      patternLetters = _patern
     }
-    if (Object.keys(patternLetters).length === 0) {
-      includes = true
-    } else {
-      includes = false
-    }
-    console.log(includes)
   }
-  return includes
-};
+  return false
+}
