@@ -1,49 +1,62 @@
 const find_substring = function(str, pattern) {
-  // TODO: Write your code here
-  // keep track of letterCount = {}
-  // keep track of window = ''
-  // keep track of matches = 0
-  // keep track of windowStart = 0
+  // variables: obj of pattern's counts, obj of curr letter counts, shortest subStr, windowSt, windowEn
+  // (for loop) move windowEnd
+    // while (currObj >= pattObj)
+      // set shortSubStr IF it is less than shortSubStr.length
+      // incrementing window start (shrink)
 
-  // start adding letters to window from right
-  // if letter is in patternCount
-  //  subtract one from patternCount
-  //  increase matches++
-  // check if matches === length of distince chars in patternCount
-  //  if it does return the current window
-  // shrink the window while matches === length Obkect.keys(patternCount).length
-  // if the length of the shorter string is less reset the answer
 
-  const patternCount = {}
-  let windowStart = 0
-  let matches = 0
-  let answer = ''
+  let windowStart = 0;
+  let shortestSubStr = "";
+  const currObj = {};
+  const patternObj = {};
 
-  for (let letter of pattern) {
-    if (!(letter in patternCount)) {
-      patternCount[letter] = 0
-    }
-    patternCount[letter] += 1
-  }
-
-  for (let windowEnd = 0; windowEnd < str.length; windowEnd++) {
-    const rightLetter = str[windowEnd]
-    if (rightLetter in patternCount) {
-      if (patternCount[rightLetter] !== 0) {
-        matches++
-        patternCount[rightLetter]--
-      }
-    }
-    const leftLetter = str[windowStart]
-    if (windowEnd > pattern.length) {
-      windowStart++
-      if (patternCount[leftLetter] === 0) {
-        patternCount[leftLetter]++
-      }
-    }
-    if (matches === Object.keys(patternCount).length) {
-      answer =  str.slice(windowStart, windowEnd)
+  for(let letter of pattern) {
+    if(patternObj[letter]) {
+      patternObj[letter]++;
+    } else {
+      patternObj[letter] = 1;
     }
   }
-  return answer
+
+  for(let windowEnd = 0; windowEnd < str.length; windowEnd++) {
+    let currLetter = str[windowEnd];
+    if(patternObj[currLetter]) {
+      if(currObj[currLetter]) {
+        currObj[currLetter]++;
+      } else {
+        currObj[currLetter] = 1;
+      }
+    }
+
+    while(compare_objs(patternObj, currObj) === true) {
+      let subStr = str.slice(windowStart, windowEnd + 1);
+
+      if(shortestSubStr === "") {
+        shortestSubStr = subStr;
+      } else {
+        if(subStr.length < shortestSubStr.length) {
+          shortestSubStr = subStr;
+        }
+      }
+      currObj[str[windowStart]]--;
+      windowStart++;
+    }
+  }
+
+  return shortestSubStr;
+}
+
+const compare_objs = function(patternObj, currObj) {
+  let bool = true;
+  for(let letter in patternObj) {
+    console.log(letter)
+    if(currObj[letter] === undefined) {
+      console.log('not found')
+      bool = false;
+    } else if (currObj[letter] < patternObj[letter]) {
+      bool = false;
+    }
+  }
+  return bool;
 }
